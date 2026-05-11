@@ -12,6 +12,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# temporary CMD line to just start the app
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
-#CMD bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+#fallback command if run without docker-compose
+CMD echo "WARNING: Running fallback command from Dockerfile" && \
+    uvicorn app.main:app --host 0.0.0.0 --port 8000

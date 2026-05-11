@@ -5,12 +5,16 @@ services:
     env_file:
       - .env
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    environment:
+      # Tell PostgreSQL 18 exactly where to write inside the mounted volume
+      - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - postgres_data:/var/lib/postgresql/
+      # Mount to the base directory
+      - postgres_data:/var/lib/postgresql
       - ./init-db:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"] # Double $$ prevents docker-compose shell warning
       interval: 5s
       timeout: 5s
       retries: 5
@@ -21,12 +25,13 @@ services:
     env_file:
       - .env
     ports:
-      - "8000:8000"
+      - "${APP_PORT}:${APP_PORT}"
     volumes:
       - .:/app
     depends_on:
       db:
         condition: service_healthy
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host ${APP_HOST} --port ${APP_PORT} --reload"
 
 volumes:
   postgres_data:
