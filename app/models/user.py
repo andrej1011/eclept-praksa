@@ -1,18 +1,24 @@
-from pydantic import BaseModel
-from uuid import UUID
-from typing import List
+import uuid
 
-from app.db.user import UserRole
-from app.models.booking import Booking
+from sqlalchemy import String, Enum as SAEnum
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
-class User(BaseModel):
-    id:UUID
-    username: str
-    role: UserRole
-    password: str
-    first_name: str | None = None
-    last_name: str | None = None
-    email: str | None = None
-    phone_number: str | None = None
+from app.db.database import Base
+from app.enums.user import UserRole
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4,Nullable=False)
+    username: Mapped[str] = mapped_column(String(32), unique=True,Nullable=False)
+    role: Mapped[UserRole] = mapped_column(SAEnum(UserRole, name="user_role"), default=UserRole.user,Nullable=False)
+    password: Mapped[str] = mapped_column(String(255),Nullable=False)
+    first_name: Mapped[str | None] = mapped_column(String(100))
+    last_name: Mapped[str | None] = mapped_column(String(100))
+    email: Mapped[str | None] = mapped_column(String(100), unique=True)
+    phone_number: Mapped[str | None] = mapped_column(String(15), unique=True)
+
+    bookings: Mapped[list["Booking"]] = relationship("Booking", back_populates="user")
     
-    bookings: List[Booking] = []

@@ -9,5 +9,10 @@ class Settings:
     APP_HOST: str = env_config.get("APP_HOST")
     APP_PORT: str = env_config.get("APP_PORT")
 
+class Timezone:
+        # separated from Settings so Booking ORM doesn't have to import all of the sensitive data from env 
+        SERVER_TIMEZONE: str = env_config.get("SERVER_TIMEZONE")
+
 
 settings = Settings()
+timezone = Timezone()

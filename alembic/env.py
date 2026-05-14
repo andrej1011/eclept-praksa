@@ -8,13 +8,13 @@ from alembic import context
 from app.core.config import settings
 from app.db.database import Base
 
-from app.db.user import User
-from app.db.auditorium import Auditorium
-from app.db.movie import Movie
-from app.db.genre import Genre
-from app.db.movie_genre import MovieGenre
-from app.db.showing import Showing
-from app.db.booking import Booking
+from app.schemas.user import User
+from app.schemas.auditorium import Auditorium
+from app.schemas.movie import Movie
+from app.schemas.genre import Genre
+from app.schemas.movie_genre import MovieGenre
+from app.schemas.showing import Showing
+from app.schemas.booking import Booking
 
 
 
@@ -62,7 +62,6 @@ def run_migrations_online() -> None:
     """
     configuration = config.get_section(config.config_ini_section) or {}
     
-    # Force Alembic to use the exact DATABASE_URL defined in your .env / Settings
     configuration["sqlalchemy.url"] = settings.DATABASE_URL
 
     connectable = engine_from_config(
