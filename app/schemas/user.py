@@ -1,18 +1,29 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, EmailStr
 from uuid import UUID
-from typing import List
-
 from app.enums.user import UserRole
-from app.models.booking import Booking
+from app.schemas.booking import BookingRead
 
-class User(BaseModel):
-    id:UUID
+class UserBase(BaseModel):
     username: str
-    role: UserRole
-    password: str
     first_name: str | None = None
     last_name: str | None = None
-    email: str | None = None
+    email: EmailStr | None = None
     phone_number: str | None = None
-    
-    bookings: List[Booking] = []
+
+class UserCreate(UserBase):
+    password: str
+
+class UserUpdate(BaseModel):
+    password: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    email: EmailStr | None = None
+    phone_number: str | None = None
+
+class UserRead(UserBase):
+    id: UUID
+    role: UserRole
+    bookings: list["BookingRead"] = Field(default_factory=list)
+    model_config = {"from_attributes": True}
+
+UserRead.model_rebuild()

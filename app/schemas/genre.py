@@ -1,8 +1,15 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from uuid import UUID
-from typing import List
 
-class Genre(BaseModel):
-    id: UUID
+class GenreBase(BaseModel):
     name: str
-    movies: List = []
+
+class GenreCreate(GenreBase):
+    pass
+
+class GenreUpdate(BaseModel):
+    name: str | None = None
+
+class GenreRead(GenreBase):
+    id: UUID
+    model_config = {"from_attributes": True}

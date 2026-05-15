@@ -5,3 +5,4 @@ sqlalchemy
 psycopg
 alembic
 python-dotenv
+email-validator
