@@ -1,24 +1,27 @@
 from pydantic import BaseModel, Field, EmailStr
+from pydantic_extra_types.phone_numbers import PhoneNumber
 from uuid import UUID
+
 from app.enums.user import UserRole
 from app.schemas.booking import BookingRead
+from app.core.security import Password
 
 class UserBase(BaseModel):
-    username: str
-    first_name: str | None = None
-    last_name: str | None = None
+    username: str = Field(min_length=3, max_length=32)
+    first_name: str | None = Field(default=None, max_length=100)
+    last_name: str | None = Field(default=None, max_length=100)
     email: EmailStr | None = None
-    phone_number: str | None = None
+    phone_number: PhoneNumber | None = None
 
 class UserCreate(UserBase):
-    password: str
+    password: Password
 
 class UserUpdate(BaseModel):
-    password: str | None = None
-    first_name: str | None = None
-    last_name: str | None = None
+    password: Password | None = None
+    first_name: str | None = Field(default=None, max_length=100)
+    last_name: str | None = Field(default=None, max_length=100)
     email: EmailStr | None = None
-    phone_number: str | None = None
+    phone_number: PhoneNumber | None = None
 
 class UserRead(UserBase):
     id: UUID

@@ -9,10 +9,10 @@ from datetime import datetime
 class Showing(Base):
     __tablename__ = "showings"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4,Nullable=False)
-    movie_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("movies.id"),Nullable=False)
-    auditorium_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("auditoriums.id"),Nullable=False)
-    start_time: Mapped[datetime] = mapped_column(TIMESTAMP,Nullable=False)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    movie_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("movies.id"))
+    auditorium_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("auditoriums.id"))
+    start_time: Mapped[datetime] = mapped_column(TIMESTAMP,nullable=False)
     booked_seats: Mapped[int] = mapped_column(Integer, default=0)
 
     movie: Mapped["Movie"] = relationship("Movie", back_populates="showings")

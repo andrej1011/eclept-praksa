@@ -11,10 +11,10 @@ from app.enums.user import UserRole
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4,Nullable=False)
-    username: Mapped[str] = mapped_column(String(32), unique=True,Nullable=False)
-    role: Mapped[UserRole] = mapped_column(SAEnum(UserRole, name="user_role"), default=UserRole.user,Nullable=False)
-    password: Mapped[str] = mapped_column(String(255),Nullable=False)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    username: Mapped[str] = mapped_column(String(32), unique=True,nullable=False)
+    role: Mapped[UserRole] = mapped_column(SAEnum(UserRole, name="user_role"), default=UserRole.user)
+    password: Mapped[str] = mapped_column(String(255),nullable=False)
     first_name: Mapped[str | None] = mapped_column(String(100))
     last_name: Mapped[str | None] = mapped_column(String(100))
     email: Mapped[str | None] = mapped_column(String(100), unique=True)

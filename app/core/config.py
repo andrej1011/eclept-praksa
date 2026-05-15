@@ -1,5 +1,5 @@
 from dotenv import dotenv_values
-
+from zoneinfo import ZoneInfo
 
 env_config = dotenv_values(".env")
 
@@ -11,7 +11,7 @@ class Settings:
 
 class Timezone:
         # separated from Settings so Booking ORM doesn't have to import all of the sensitive data from env 
-        SERVER_TIMEZONE: str = env_config.get("SERVER_TIMEZONE")
+        SERVER_TIMEZONE = ZoneInfo(env_config.get("SERVER_TIMEZONE"))
 
 
 settings = Settings()

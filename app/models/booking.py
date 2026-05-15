@@ -17,7 +17,7 @@ class Booking(Base):
     showing_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("showings.id"))
     seats: Mapped[int] = mapped_column(Integer)
     status: Mapped[BookingStatus] = mapped_column(SAEnum(BookingStatus, name="booking_status"), default=BookingStatus.active)
-    booked_at: Mapped[datetime] = mapped_column(TIMESTAMP,default=datetime.now(timezone.SERVER_TIMEZONE))
+    booked_at: Mapped[datetime] = mapped_column(TIMESTAMP, default=lambda: datetime.now(timezone.SERVER_TIMEZONE))
 
     user: Mapped["User"] = relationship("User", back_populates="bookings")
     showing: Mapped["Showing"] = relationship("Showing", back_populates="bookings")

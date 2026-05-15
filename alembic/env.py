@@ -8,13 +8,13 @@ from alembic import context
 from app.core.config import settings
 from app.db.database import Base
 
-from app.schemas.user import User
-from app.schemas.auditorium import Auditorium
-from app.schemas.movie import Movie
-from app.schemas.genre import Genre
-from app.schemas.movie_genre import MovieGenre
-from app.schemas.showing import Showing
-from app.schemas.booking import Booking
+from app.models.user import User
+from app.models.auditorium import Auditorium
+from app.models.movie import Movie
+from app.models.genre import Genre
+from app.models.movie_genre import MovieGenre
+from app.models.showing import Showing
+from app.models.booking import Booking
 
 
 
