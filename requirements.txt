@@ -8,5 +8,6 @@ python-dotenv
 pydantic-extra-types
 email-validator
 phonenumbers
-bcrypt
+passlib[bcrypt]
+bcrypt<4.1
 password-validator
