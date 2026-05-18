@@ -4,7 +4,7 @@ from uuid import UUID
 
 from app.enums.user import UserRole
 from app.schemas.booking import BookingRead
-from app.schemas.auth import Password
+from app.core.security import Password
 
 class UserBase(BaseModel):
     username: str = Field(min_length=3, max_length=32)
