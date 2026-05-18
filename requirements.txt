@@ -5,3 +5,9 @@ sqlalchemy
 psycopg
 alembic
 python-dotenv
+pydantic-extra-types
+email-validator
+phonenumbers
+passlib[bcrypt]
+bcrypt<4.1
+password-validator
