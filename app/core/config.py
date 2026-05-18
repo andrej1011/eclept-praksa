@@ -13,6 +13,12 @@ class Timezone:
         # separated from Settings so Booking ORM doesn't have to import all of the sensitive data from env 
         SERVER_TIMEZONE = ZoneInfo(env_config.get("SERVER_TIMEZONE"))
 
+class JWT_Settings:
+    JWT_SECRET: str = env_config.get("JWT_SECRET")
+    JWT_ALGORITHM: str = env_config.get("JWT_ALGORITHM")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = env_config.get("ACCESS_TOKEN_EXPIRE_MINUTES")
+
 
 settings = Settings()
 timezone = Timezone()
+jwt_settings = JWT_Settings()
