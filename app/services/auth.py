@@ -35,5 +35,11 @@ class AuthService:
         if not user or not verify_password(data.password, user.password):
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Username or password incorrect")
         return create_access_token(str(user.id), user.role.value)
-        
+    
+    def get_user_by_token(self, token: str) -> User:
+        payload = decode_token(token)
+        user = self._db.query(User).filter(User.id == payload["sub"]).first()
+        if not user:
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid token")
+        return user
  

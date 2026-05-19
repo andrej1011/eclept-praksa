@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from uuid import UUID
-import datetime
+from datetime import datetime
 
 from app.core.config import timezone
 from app.schemas.booking import BookingRead
