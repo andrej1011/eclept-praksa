@@ -17,9 +17,6 @@ class JWT_Settings:
     JWT_SECRET: str = env_config.get("JWT_SECRET")
     JWT_ALGORITHM: str = env_config.get("JWT_ALGORITHM")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(env_config.get("ACCESS_TOKEN_EXPIRE_MINUTES"))
-    HTTP_ONLY: bool = env_config.get("HTTP_ONLY")
-    COOKIE_SECURE: bool = env_config.get("COOKIE_SECURE") == "true"
-    COOKIE_SAMESITE: str = env_config.get("COOKIE_SAMESITE")
 
 
 settings = Settings()

@@ -30,16 +30,10 @@ class AuthService:
         self._db.refresh(user)
         return user
     
-    def login(self, data: LoginRequest) -> tuple[User, str]:
+    def login(self, data: LoginRequest) -> str:
         user = self._db.query(User).filter(User.username == data.username).first()
         if not user or not verify_password(data.password, user.password):
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Username or password incorrect")
-        token = create_access_token(str(user.id), user.role.value)
-        return user, token
-    
-    def whoami(self, token: str) -> str:
-        payload = decode_token(token)
-        user = self._db.query(User).filter(User.id == payload["sub"]).first()
-        if not user:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
-        return user.username
+        return create_access_token(str(user.id), user.role.value)
+        
+ 

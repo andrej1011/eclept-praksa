@@ -6,8 +6,9 @@ class AuthBase(BaseModel):
     username: str = Field(min_length=3, max_length=32)
     password: Password
 
-class LoginRequest(AuthBase):
-    pass
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
 class RegisterRequest(AuthBase):
     confirm_password: str
@@ -21,3 +22,7 @@ class RegisterRequest(AuthBase):
         if self.password != self.confirm_password:
             raise ValueError("passwords do not match")
         return self
+    
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

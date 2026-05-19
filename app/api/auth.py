@@ -1,36 +1,23 @@
-from fastapi import APIRouter, Cookie, Depends, Response, status
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-from app.core.config import jwt_settings
 from app.db.database import get_db
-from app.schemas.auth import RegisterRequest, LoginRequest
+from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse
 from app.schemas.user import UserRead
 from app.services.auth import AuthService
 
-
-router = APIRouter(tags=["auth"])
+router = APIRouter()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
     return AuthService(db)
 
-@router.post("/register", status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 def register(data: RegisterRequest, service: AuthService = Depends(get_auth_service)):
-    service.create_user(data)
-    return {"message": "registered successfully"}
+    return service.create_user(data)
 
-@router.post("/login", response_model=UserRead)
-def login(data: LoginRequest, response: Response, service: AuthService = Depends(get_auth_service)):
-    user, token = service.login(data)
-    response.set_cookie(
-        key="access_token",
-        value=token,
-        httponly=jwt_settings.HTTP_ONLY,
-        secure=jwt_settings.COOKIE_SECURE,
-        samesite=jwt_settings.COOKIE_SAMESITE,
-        max_age=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    )
-    return user
-
-@router.get("/whoami")
-def whoami(access_token: str = Cookie(), service: AuthService = Depends(get_auth_service)):
-    return service.whoami(access_token)
+@router.post("/login", response_model=TokenResponse)
+def login(data: LoginRequest, service: AuthService = Depends(get_auth_service)):
+    token = service.login(data)
+    return TokenResponse(access_token=token)
