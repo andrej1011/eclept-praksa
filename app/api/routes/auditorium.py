@@ -10,7 +10,7 @@ from app.schemas.auditorium import AuditoriumCreate, AuditoriumUpdate, Auditoriu
 from app.services.auditorium import AuditoriumService
 
 
-router = APIRouter(prefix="/auditoriums")
+router = APIRouter(prefix="/auditoriums",tags=["auditoriums"])
 
 def get_auditorium_service(db: Session = Depends(get_db)) -> AuditoriumService:
     return AuditoriumService(db)
