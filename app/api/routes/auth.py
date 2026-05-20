@@ -3,10 +3,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
-from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse
+from app.schemas.auth import RegisterRequest, LoginRequest, LoginResponse
 from app.schemas.user import UserRead
 from app.services.auth import AuthService
-
 from app.models.user import User
 from app.enums.user import UserRole
 
@@ -19,10 +18,10 @@ def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
 def register(data: RegisterRequest, service: AuthService = Depends(get_auth_service)):
     return service.create_user(data)
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=LoginResponse)
 def login(data: LoginRequest, service: AuthService = Depends(get_auth_service)):
-    token = service.login(data)
-    return TokenResponse(access_token=token)
+    user, token = service.login(data)
+    return LoginResponse(user=user, access_token=token)
 
 bearer_scheme = HTTPBearer()
 

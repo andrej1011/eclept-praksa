@@ -17,12 +17,6 @@ class AuditoriumService:
         if not a:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Auditorium not found")
         return a
-    
-    def get_by_name(self, name: str | None = None) -> list[Auditorium]:
-        query = self._db.query(Auditorium)
-        if name:
-            query = query.filter(Auditorium.name.ilike(f"%{name}%"))
-        return query.all()
 
     def create(self, data: AuditoriumCreate) -> Auditorium:
         if self._db.query(Auditorium).filter(Auditorium.name == data.name).first():

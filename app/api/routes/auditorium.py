@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 
 from app.db.database import get_db
-from app.api.auth import require_role
+from app.api.routes.auth import require_role
 from app.enums.user import UserRole
 from app.schemas.auditorium import AuditoriumCreate, AuditoriumUpdate, AuditoriumRead
 from app.services.auditorium import AuditoriumService
@@ -22,10 +22,6 @@ def list_auditoriums(service: AuditoriumService = Depends(get_auditorium_service
 @router.get("/{auditorium_id}", response_model=AuditoriumRead,dependencies=[Depends(require_role(UserRole.admin))])
 def get_auditorium(auditorium_id: UUID, service: AuditoriumService = Depends(get_auditorium_service)):
     return service.get_one(auditorium_id)
-
-@router.get("", response_model=list[AuditoriumRead])
-def get_auditorium_by_name(name: str | None = None, service: AuditoriumService = Depends(get_auditorium_service)):
-    return service.get_by_name(name)
 
 @router.post("", response_model=AuditoriumRead, status_code=status.HTTP_201_CREATED,dependencies=[Depends(require_role(UserRole.admin))])
 def create_auditorium(data: AuditoriumCreate, service: AuditoriumService = Depends(get_auditorium_service)):

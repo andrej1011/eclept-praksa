@@ -1,6 +1,7 @@
+from app.api.routes import auditorium
 from fastapi import FastAPI
 
-from app.api import auth,auditorium
+from app.api.routes import auth
 
 app = FastAPI(title="MovieMate API")
 
