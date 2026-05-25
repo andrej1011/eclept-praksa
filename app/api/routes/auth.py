@@ -18,7 +18,7 @@ def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
 def register(data: RegisterRequest, service: AuthService = Depends(get_auth_service)):
     return service.create_user(data)
 
-@router.post("/login", response_model=LoginResponse)
+@router.post("/login", response_model=LoginResponse,  status_code=status.HTTP_200_OK)
 def login(data: LoginRequest, service: AuthService = Depends(get_auth_service)):
     user, token = service.login(data)
     return LoginResponse(user=user, access_token=token)
@@ -34,6 +34,6 @@ def get_current_user(
 def require_role(*roles: UserRole):
     def checker(user: User = Depends(get_current_user)) -> User:
         if user.role not in roles:
-            raise HTTPException(status.HTTP_403_FORBIDDEN)
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
         return user
     return checker

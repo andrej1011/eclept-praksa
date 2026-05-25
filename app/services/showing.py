@@ -17,7 +17,7 @@ class ShowingService:
     def get_one(self, showing_id: UUID) -> Showing:
         s = self._db.query(Showing).filter(Showing.id == showing_id).first()
         if not s:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, "Showing not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Showing not found")
         return s
 
     def create(self, data: ShowingCreate) -> Showing:

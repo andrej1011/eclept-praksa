@@ -13,15 +13,15 @@ router = APIRouter(prefix="/genres",tags=["genres"])
 def get_genre_service(db: Session = Depends(get_db)) -> GenreService:
     return GenreService(db)
 
-@router.get("", response_model=list[GenreRead])
+@router.get("", response_model=list[GenreRead], status_code=status.HTTP_200_OK)
 def list_genre(service: GenreService = Depends(get_genre_service)):
     return service.get_all()
 
-@router.get("/search", response_model=GenreRead)
+@router.get("/search", response_model=GenreRead,status_code=status.HTTP_200_OK)
 def search_genre(name: str, service: GenreService = Depends(get_genre_service)):
     return service.get_by_name(name)
 
-@router.get("/{genre_id}", response_model=GenreRead)
+@router.get("/{genre_id}", response_model=GenreRead,status_code=status.HTTP_200_OK)
 def get_genre(genre_id: UUID, service: GenreService = Depends(get_genre_service)):
     return service.get_one(genre_id)
 
@@ -29,7 +29,7 @@ def get_genre(genre_id: UUID, service: GenreService = Depends(get_genre_service)
 def create_genre(data: GenreCreate, service: GenreService = Depends(get_genre_service)):
     return service.create(data)
 
-@router.patch("/{genre_id}", response_model=GenreRead,dependencies=[Depends(require_role(UserRole.admin))])
+@router.patch("/{genre_id}", response_model=GenreRead,status_code=status.HTTP_200_OK,dependencies=[Depends(require_role(UserRole.admin))])
 def update_genre(auditorium_id: UUID, data: GenreUpdate, service: GenreService = Depends(get_genre_service)):
     return service.update(auditorium_id, data)
 

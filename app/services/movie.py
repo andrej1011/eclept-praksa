@@ -16,13 +16,13 @@ class MovieService:
     def get_one(self, movie_id: UUID) -> Movie:
         m = self._db.query(Movie).filter(Movie.id == movie_id).first()
         if not m:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, "Movie not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found")
         return m
     
     def get_by_name(self, movie_name: str) -> Movie:
         m = self._db.query(Movie).filter(Movie.name == movie_name).first()
         if not m:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, "Movie not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found")
         return m
 
     def create(self, data: MovieCreate) -> Movie:

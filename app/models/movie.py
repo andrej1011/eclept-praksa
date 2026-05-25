@@ -1,5 +1,4 @@
 import uuid
-import enum
 from datetime import date
 from sqlalchemy import String, Boolean, Integer, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship

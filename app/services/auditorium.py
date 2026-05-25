@@ -15,12 +15,12 @@ class AuditoriumService:
     def get_one(self, auditorium_id: UUID) -> Auditorium:
         a = self._db.query(Auditorium).filter(Auditorium.id == auditorium_id).first()
         if not a:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, "Auditorium not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Auditorium not found")
         return a
 
     def create(self, data: AuditoriumCreate) -> Auditorium:
         if self._db.query(Auditorium).filter(Auditorium.name == data.name).first():
-            raise HTTPException(status.HTTP_409_CONFLICT, "Auditorium name already exists")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Auditorium name already exists")
         a = Auditorium(name=data.name, capacity=data.capacity)
         self._db.add(a)
         self._db.commit()
@@ -32,7 +32,7 @@ class AuditoriumService:
         update_data = data.model_dump(exclude_unset=True)
         if "name" in update_data and update_data["name"] != a.name:
             if self._db.query(Auditorium).filter(Auditorium.name == update_data["name"]).first():
-                raise HTTPException(status.HTTP_409_CONFLICT, "Auditorium name already exists")
+                raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Auditorium name already exists")
         for k, v in update_data.items():
             setattr(a, k, v)
         self._db.commit()

@@ -13,15 +13,15 @@ router = APIRouter(prefix="/movies",tags=["movies"])
 def get_movie_service(db: Session = Depends(get_db)) -> MovieService:
     return MovieService(db)
 
-@router.get("", response_model=list[MovieRead])
+@router.get("", response_model=list[MovieRead],status_code=status.HTTP_200_OK)
 def list_movies(service: MovieService = Depends(get_movie_service)):
     return service.get_all()
 
-@router.get("/search", response_model=MovieRead)
+@router.get("/search", response_model=MovieRead,status_code=status.HTTP_200_OK)
 def search_movie(name: str, service: MovieService = Depends(get_movie_service)):
     return service.get_by_name(name)
 
-@router.get("/{movie_id}", response_model=MovieRead)
+@router.get("/{movie_id}", response_model=MovieRead,status_code=status.HTTP_200_OK)
 def get_movie(movie_id: UUID, service: MovieService = Depends(get_movie_service)):
     return service.get_one(movie_id)
 
@@ -29,7 +29,7 @@ def get_movie(movie_id: UUID, service: MovieService = Depends(get_movie_service)
 def create_movie(data: MovieCreate, service: MovieService = Depends(get_movie_service)):
     return service.create(data)
 
-@router.patch("/{movie_id}", response_model=MovieRead, dependencies=[Depends(require_role(UserRole.admin))])
+@router.patch("/{movie_id}", response_model=MovieRead,status_code=status.HTTP_200_OK, dependencies=[Depends(require_role(UserRole.admin))])
 def update_movie(movie_id: UUID, data: MovieUpdate, service: MovieService = Depends(get_movie_service)):
     return service.update(movie_id, data)
 

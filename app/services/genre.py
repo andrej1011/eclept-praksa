@@ -15,18 +15,18 @@ class GenreService:
     def get_one(self, genre_id: UUID) -> Genre:
         g = self._db.query(Genre).filter(Genre.id == genre_id).first()
         if not g:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, "Genre not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Genre not found")
         return g
 
     def get_by_name(self, name: str) -> Genre:
         g = self._db.query(Genre).filter(Genre.name.ilike(name)).first()
         if not g:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, "Genre not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Genre not found")
         return g
 
     def create(self, data: GenreCreate) -> Genre:
         if self._db.query(Genre).filter(Genre.name == data.name).first():
-            raise HTTPException(status.HTTP_409_CONFLICT, "Genre already exists")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Genre already exists")
         g = Genre(name=data.name)
         self._db.add(g)
         self._db.commit()
@@ -38,7 +38,7 @@ class GenreService:
         update_data = data.model_dump(exclude_unset=True)
         if "name" in update_data and update_data["name"] != g.name:
             if self._db.query(Genre).filter(Genre.name == update_data["name"]).first():
-                raise HTTPException(status.HTTP_409_CONFLICT, "Genre already exists")
+                raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Genre already exists")
         for k, v in update_data.items():
             setattr(g, k, v)
         self._db.commit()

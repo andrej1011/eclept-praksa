@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.models.user import User
 from app.schemas.auth import RegisterRequest, LoginRequest
-from app.core.security import hash_password, verify_password, create_access_token, decode_token
+from app.core.security import hash_password, verify_password, create_access_token,decode_token
 
 class AuthService:
     def __init__(self, db: Session):
@@ -11,11 +11,11 @@ class AuthService:
 
     def create_user(self, data: RegisterRequest) -> User:
         if self._db.query(User).filter(User.username == data.username).first():
-            raise HTTPException(status.HTTP_409_CONFLICT, "Username already taken")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username already taken")
         if data.email and self._db.query(User).filter(User.email == data.email).first():
-            raise HTTPException(status.HTTP_409_CONFLICT, "Email already in use")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail="Email already in use")
         if data.phone_number and self._db.query(User).filter(User.phone_number == str(data.phone_number)).first():
-            raise HTTPException(status.HTTP_409_CONFLICT, "Phone number already in use")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail="Phone number already in use")
 
         user = User(
             username=data.username,
@@ -33,13 +33,13 @@ class AuthService:
     def login(self, data: LoginRequest) -> tuple[User, str]:
         user = self._db.query(User).filter(User.username == data.username).first()
         if not user or not verify_password(data.password, user.password):
-            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Username or password incorrect")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Username or password incorrect")
         return user, create_access_token(str(user.id), user.role.value)
     
     def get_user_by_token(self, token: str) -> User:
         payload = decode_token(token)
         user = self._db.query(User).filter(User.id == payload["sub"]).first()
         if not user:
-            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid token")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Username or password incorrect")
         return user
  
