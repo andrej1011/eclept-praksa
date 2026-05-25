@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr, model_validator
 from pydantic_extra_types.phone_numbers import PhoneNumber
-from app.core.security import Password
+from app.schemas.types import Password
 
 class AuthBase(BaseModel):
     username: str = Field(min_length=3, max_length=32)

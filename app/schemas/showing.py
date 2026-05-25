@@ -1,8 +1,7 @@
 from pydantic import BaseModel, Field, field_validator
 from uuid import UUID
-import datetime
+from datetime import datetime,timezone
 
-from app.core.config import timezone
 from app.schemas.booking import BookingRead
 
 class ShowingBase(BaseModel):
@@ -13,7 +12,7 @@ class ShowingBase(BaseModel):
     @field_validator("start_time")
     @classmethod
     def future(cls, v):
-        assert v >= datetime.now(timezone.SERVER_TIMEZONE), "start_time must be in the future"
+        assert v >= datetime.now(timezone.utc), "start_time must be in the future"
         return v
 
 class ShowingCreate(ShowingBase):
