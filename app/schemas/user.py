@@ -29,4 +29,11 @@ class UserRead(UserBase):
     bookings: list["BookingRead"] = Field(default_factory=list)
     model_config = {"from_attributes": True}
 
+class PasswordChange(BaseModel):
+    old_password: str
+    new_password: Password
+
+class RoleUpdate(BaseModel):
+    role: UserRole
+
 UserRead.model_rebuild()
