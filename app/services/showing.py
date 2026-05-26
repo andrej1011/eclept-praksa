@@ -27,20 +27,32 @@ class ShowingService:
             start_time=data.start_time,
             booked_seats=0,
         )
-        self._db.add(showing)
-        self._db.commit()
-        self._db.refresh(showing)
+        try:
+            self._db.add(showing)
+            self._db.commit()
+            self._db.refresh(showing)
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create showing")
         return showing
 
     def update(self, showing_id: UUID, data: ShowingUpdate) -> Showing:
         showing = self.get_one(showing_id)
         for k, v in data.model_dump(exclude_unset=True).items():
             setattr(showing, k, v)
-        self._db.commit()
-        self._db.refresh(showing)
+        try:
+            self._db.commit()
+            self._db.refresh(showing)
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update showing")
         return showing
 
     def delete(self, showing_id: UUID) -> None:
         showing = self.get_one(showing_id)
-        self._db.delete(showing)
-        self._db.commit()
+        try:
+            self._db.delete(showing)
+            self._db.commit()
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete showing")
