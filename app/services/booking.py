@@ -39,7 +39,7 @@ class BookingService:
             self._db.refresh(booking)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create booking")
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create booking")
         return booking
 
     def get_all_bookings(self)-> list[Booking]:
@@ -88,5 +88,21 @@ class BookingService:
             self._db.refresh(booking)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to cancel the booking")
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to cancel the booking")
+        return booking
+
+    def mark_used(self, booking_id: UUID) -> Booking:
+        booking = self._db.query(Booking).filter(Booking.id == booking_id).first()
+        if not booking:
+            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail="Booking not found")
+        if booking.status != BookingStatus.active:
+            raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail=f"Booking is {booking.status.value}, cannot mark used")
+
+        booking.status = BookingStatus.used
+        try:
+            self._db.commit()
+            self._db.refresh(booking)
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to mark booking used")
         return booking

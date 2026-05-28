@@ -8,6 +8,10 @@ from app.models.showing import Showing
 from app.schemas.showing import ShowingCreate, ShowingUpdate,ShowingFilters
 from app.models.auditorium import Auditorium
 from app.enums.sorting import SortOrder
+from app.enums.showing import ShowingStatus
+from app.enums.booking import BookingStatus
+from app.models.booking import Booking
+
 
 
 class ShowingService:
@@ -56,7 +60,7 @@ class ShowingService:
             self._db.refresh(showing)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create showing")
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create showing")
         return showing
 
     def update(self, showing_id: UUID, data: ShowingUpdate) -> Showing:
@@ -68,7 +72,7 @@ class ShowingService:
             self._db.refresh(showing)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update showing")
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update showing")
         return showing
 
     def delete(self, showing_id: UUID) -> None:
@@ -78,4 +82,23 @@ class ShowingService:
             self._db.commit()
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete showing")
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete showing")
+        
+    def cancel(self, showing_id: UUID) -> Showing:
+        showing = self.get_one(showing_id)
+        if showing.status == ShowingStatus.cancelled:
+            raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail="Showing already cancelled")
+
+        showing.status = ShowingStatus.cancelled
+        self._db.query(Booking).filter(
+            Booking.showing_id == showing_id,
+            Booking.status == BookingStatus.active,
+        ).update({"status": BookingStatus.cancelled}, synchronize_session=False)
+
+        try:
+            self._db.commit()
+            self._db.refresh(showing)
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to cancel showing")
+        return showing

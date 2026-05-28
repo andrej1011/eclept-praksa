@@ -32,3 +32,7 @@ def update_showing(showing_id: UUID, data: ShowingUpdate, service: ShowingServic
 @router.delete("/{showing_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_role(UserRole.admin))])
 def delete_showing(showing_id: UUID, service: ShowingService = Depends(get_showing_service)):
     service.delete(showing_id)
+
+@router.post("/{showing_id}/cancel", response_model=ShowingRead, dependencies=[Depends(require_role(UserRole.admin))])
+def cancel_showing(showing_id: UUID, service: ShowingService = Depends(get_showing_service)):
+    return service.cancel(showing_id)
