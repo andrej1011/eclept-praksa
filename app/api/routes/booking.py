@@ -8,6 +8,7 @@ from app.enums.user import UserRole
 from app.models.user import User
 from app.schemas.booking import BookingCreate, BookingRead
 from app.services.booking import BookingService
+from app.schemas.booking import BookingFilters
 
 router = APIRouter(prefix="/bookings",tags=["bookings"])
 
@@ -29,12 +30,9 @@ def all_bookings(
 ):
     return service.get_all_bookings()
 
-@router.get("", response_model=list[BookingRead],status_code=status.HTTP_200_OK)
-def my_bookings(
-    user: User = Depends(get_current_user),
-    service: BookingService = Depends(get_booking_service),
-):
-    return service.get_user_bookings(user.id)
+@router.get("", response_model=list[BookingRead])
+def my_bookings(filters: BookingFilters = Depends(), user: User = Depends(get_current_user), service: BookingService = Depends(get_booking_service)):
+    return service.get_user_bookings(user.id, filters)
 
 @router.get("/{booking_id}", response_model=BookingRead)
 def get_booking(

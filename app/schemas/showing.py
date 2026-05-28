@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from uuid import UUID
-from datetime import datetime,timezone
+from datetime import datetime,date,timezone
 from app.enums.sorting import SortOrder
 
 from app.schemas.booking import BookingRead
@@ -33,7 +33,7 @@ class ShowingRead(BaseModel):
     bookings: list["BookingRead"] = Field(default_factory=list)
     model_config = {"from_attributes": True}
 
-class ShowingFilterParams(BaseModel):
+class ShowingFilters(BaseModel):
     movie_id: UUID | None = None
     day: date | None = None
     upcoming: bool | None = None

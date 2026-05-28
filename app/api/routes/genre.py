@@ -13,7 +13,7 @@ router = APIRouter(prefix="/genres",tags=["genres"])
 def get_genre_service(db: Session = Depends(get_db)) -> GenreService:
     return GenreService(db)
 
-@router.get("", response_model=list[GenreRead])
+@router.get("", response_model=list[GenreRead],status_code=status.HTTP_200_OK)
 def list_genres(name: str | None = None, service: GenreService = Depends(get_genre_service)):
     return service.get_all(name)
 

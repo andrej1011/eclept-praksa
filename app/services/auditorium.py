@@ -17,29 +17,48 @@ class AuditoriumService:
         if not a:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Auditorium not found")
         return a
-
+    
     def create(self, data: AuditoriumCreate) -> Auditorium:
+        if data.capacity <= 0:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Capacity must be greater than 0")
         if self._db.query(Auditorium).filter(Auditorium.name == data.name).first():
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Auditorium name already exists")
+            raise HTTPException(status.HTTP_409_CONFLICT, detail="Auditorium name already exists")
         a = Auditorium(name=data.name, capacity=data.capacity)
         self._db.add(a)
-        self._db.commit()
-        self._db.refresh(a)
+        try:
+            self._db.commit()
+            self._db.refresh(a)
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create auditorium")
         return a
 
     def update(self, auditorium_id: UUID, data: AuditoriumUpdate) -> Auditorium:
         a = self.get_one(auditorium_id)
         update_data = data.model_dump(exclude_unset=True)
-        if "name" in update_data and update_data["name"] != a.name:
-            if self._db.query(Auditorium).filter(Auditorium.name == update_data["name"]).first():
-                raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Auditorium name already exists")
+
+        if "capacity" in update_data and update_data["capacity"] <= 0:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Capacity must be greater than 0")
+        if "name" in update_data:
+            existing = self._db.query(Auditorium).filter(Auditorium.name == update_data["name"]).first()
+            if existing and existing.id != auditorium_id:
+                raise HTTPException(status.HTTP_409_CONFLICT, detail="Auditorium name already exists")
+
         for k, v in update_data.items():
             setattr(a, k, v)
-        self._db.commit()
-        self._db.refresh(a)
+        try:
+            self._db.commit()
+            self._db.refresh(a)
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update auditorium")
         return a
-
+    
     def delete(self, auditorium_id: UUID) -> None:
         a = self.get_one(auditorium_id)
-        self._db.delete(a)
-        self._db.commit()
+        try:
+            self._db.delete(a)
+            self._db.commit()
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update auditorium")
