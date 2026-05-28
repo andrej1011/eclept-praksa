@@ -13,13 +13,9 @@ router = APIRouter(prefix="/genres",tags=["genres"])
 def get_genre_service(db: Session = Depends(get_db)) -> GenreService:
     return GenreService(db)
 
-@router.get("", response_model=list[GenreRead], status_code=status.HTTP_200_OK)
-def list_genre(service: GenreService = Depends(get_genre_service)):
-    return service.get_all()
-
-@router.get("/search", response_model=GenreRead,status_code=status.HTTP_200_OK)
-def search_genre(name: str, service: GenreService = Depends(get_genre_service)):
-    return service.get_by_name(name)
+@router.get("", response_model=list[GenreRead])
+def list_genres(name: str | None = None, service: GenreService = Depends(get_genre_service)):
+    return service.get_all(name)
 
 @router.get("/{genre_id}", response_model=GenreRead,status_code=status.HTTP_200_OK)
 def get_genre(genre_id: UUID, service: GenreService = Depends(get_genre_service)):

@@ -18,11 +18,11 @@ class GenreService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Genre not found")
         return g
 
-    def get_by_name(self, name: str) -> Genre:
-        g = self._db.query(Genre).filter(Genre.name.ilike(name)).first()
-        if not g:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Genre not found")
-        return g
+    def get_all(self, name: str | None = None) -> list[Genre]:
+        query = self._db.query(Genre)
+        if name:
+            query = query.filter(Genre.name.ilike(f"%{name}%"))
+        return query.all()
 
     def create(self, data: GenreCreate) -> Genre:
         if self._db.query(Genre).filter(Genre.name == data.name).first():
