@@ -25,6 +25,10 @@ def get_movie(movie_id: UUID, service: MovieService = Depends(get_movie_service)
 def create_movie(data: MovieCreate, service: MovieService = Depends(get_movie_service)):
     return service.create(data)
 
+@router.post("/bulk", response_model=list[MovieRead], status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_role(UserRole.admin))])
+def create_movies(data: list[MovieCreate], service: MovieService = Depends(get_movie_service)):
+    return service.create_many(data)
+
 @router.patch("/{movie_id}", response_model=MovieRead,status_code=status.HTTP_200_OK, dependencies=[Depends(require_role(UserRole.admin))])
 def update_movie(movie_id: UUID, data: MovieUpdate, service: MovieService = Depends(get_movie_service)):
     return service.update(movie_id, data)

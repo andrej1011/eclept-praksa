@@ -67,6 +67,31 @@ class MovieService:
             raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create movie entry")
         return movie
 
+    def create_many(self, items: list[MovieCreate]) -> list[Movie]:
+        movies = []
+        for data in items:
+            m = Movie(
+                name=data.name,
+                available=data.available,
+                duration=data.duration,
+                poster_url=data.poster_url,
+                short_description=data.short_description,
+                release_date=data.release_date,
+                imdb_link=data.imdb_link,
+            )
+            if data.genre_ids:
+                m.genres = self._db.query(Genre).filter(Genre.id.in_(data.genre_ids)).all()
+            movies.append(m)
+        self._db.add_all(movies)
+        try:
+            self._db.commit()
+            for m in movies:
+                self._db.refresh(m)
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create movies")
+        return movies
+
     def update(self, movie_id: UUID, data: MovieUpdate) -> Movie:
         movie = self.get_one(movie_id)
         update_data = data.model_dump(exclude_unset=True)

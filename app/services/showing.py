@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from uuid import UUID
-from datetime import datetime,timezone
+from datetime import datetime,timezone,timedelta
 
 from app.models.showing import Showing
 from app.schemas.showing import ShowingCreate, ShowingUpdate,ShowingFilters
@@ -11,7 +11,7 @@ from app.enums.sorting import SortOrder
 from app.enums.showing import ShowingStatus
 from app.enums.booking import BookingStatus
 from app.models.booking import Booking
-
+from app.models.movie import Movie
 
 
 class ShowingService:
@@ -47,7 +47,10 @@ class ShowingService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Showing not found")
         return s
 
+    
     def create(self, data: ShowingCreate) -> Showing:
+        if self.has_conflict(data.auditorium_id, data.start_time, data.movie_id):
+            raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail="Auditorium has a conflicting showing at that time")
         showing = Showing(
             movie_id=data.movie_id,
             auditorium_id=data.auditorium_id,
@@ -102,3 +105,23 @@ class ShowingService:
             self._db.rollback()
             raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to cancel showing")
         return showing
+    
+    def has_conflict(self, auditorium_id: UUID, start_time, movie_id: UUID, exclude_showing_id: UUID | None = None) -> bool:
+        new_movie = self._db.query(Movie).filter(Movie.id == movie_id).first()
+        if not new_movie:
+            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail="Movie not found")
+        new_end = start_time + timedelta(minutes=new_movie.duration)
+
+        query = (
+            self._db.query(Showing)
+            .join(Movie, Movie.id == Showing.movie_id)
+            .filter(
+                Showing.auditorium_id == auditorium_id,
+                Showing.status == ShowingStatus.active,
+                Showing.start_time < new_end,
+                Showing.start_time + func.make_interval(mins=Movie.duration) > start_time,
+            )
+        )
+        if exclude_showing_id:
+            query = query.filter(Showing.id != exclude_showing_id)
+        return query.first() is not None
