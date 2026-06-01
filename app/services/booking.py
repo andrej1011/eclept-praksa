@@ -37,7 +37,7 @@ class BookingService:
             self._db.refresh(booking)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create booking")
+            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create booking")
         return booking
 
     def get_all_bookings(self)-> list[Booking]:
@@ -55,7 +55,7 @@ class BookingService:
         return b
 
     def cancel(self, booking_id: UUID, user_id: UUID) -> Booking:
-        booking = self.get_one(booking_id, user_id)
+        booking = self.get_one(booking_id, user_id).with_for_update().first()
         if booking.status == BookingStatus.cancelled:
             raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail = "Booking already cancelled")
 
@@ -68,11 +68,6 @@ class BookingService:
         if not showing:
             raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "Showing not found")
         
-        #Added to avoid race conditions
-        self._db.refresh(booking)
-        if booking.status == BookingStatus.cancelled:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Booking already cancelled")
-
         try:
             if (showing.booked_seats-booking.seats>=0):
                 showing.booked_seats -= booking.seats
