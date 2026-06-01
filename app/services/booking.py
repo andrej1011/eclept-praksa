@@ -37,7 +37,7 @@ class BookingService:
             self._db.refresh(booking)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create booking")
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create booking")
         return booking
 
     def get_all_bookings(self)-> list[Booking]:
