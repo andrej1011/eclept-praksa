@@ -55,7 +55,12 @@ class BookingService:
         return b
 
     def cancel(self, booking_id: UUID, user_id: UUID) -> Booking:
-        booking = self.get_one(booking_id, user_id).with_for_update().first()
+        booking = (
+            self._db.query(Booking)
+            .filter(Booking.id == booking_id, Booking.user_id == user_id)
+            .with_for_update()
+            .first()
+        )
         if booking.status == BookingStatus.cancelled:
             raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail = "Booking already cancelled")
 
