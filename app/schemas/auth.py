@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, EmailStr, model_validator
 from pydantic_extra_types.phone_numbers import PhoneNumber
 from app.schemas.types import Password
+from app.schemas.user import UserRead
 
 class AuthBase(BaseModel):
     username: str = Field(min_length=3, max_length=32)
@@ -23,6 +24,7 @@ class RegisterRequest(AuthBase):
             raise ValueError("passwords do not match")
         return self
     
-class TokenResponse(BaseModel):
+class LoginResponse(BaseModel):
+    user: UserRead
     access_token: str
     token_type: str = "bearer"

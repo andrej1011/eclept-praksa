@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.models.user import User
 from app.schemas.auth import RegisterRequest, LoginRequest
-from app.core.security import hash_password, verify_password, create_access_token
+from app.core.security import hash_password, verify_password, create_access_token,decode_token
 
 class AuthService:
     def __init__(self, db: Session):
@@ -30,10 +30,16 @@ class AuthService:
         self._db.refresh(user)
         return user
     
-    def login(self, data: LoginRequest) -> str:
+    def login(self, data: LoginRequest) -> tuple[User, str]:
         user = self._db.query(User).filter(User.username == data.username).first()
         if not user or not verify_password(data.password, user.password):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Username or password incorrect")
-        return create_access_token(str(user.id), user.role.value)
-        
+        return user, create_access_token(str(user.id), user.role.value)
+    
+    def get_user_by_token(self, token: str) -> User:
+        payload = decode_token(token)
+        user = self._db.query(User).filter(User.id == payload["sub"]).first()
+        if not user:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Username or password incorrect")
+        return user
  
