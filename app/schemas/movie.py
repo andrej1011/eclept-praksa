@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from uuid import UUID
 from datetime import date
+from enum import Enum
 
 from app.schemas.showing import ShowingRead
 from app.schemas.genre import GenreRead
@@ -32,5 +33,29 @@ class MovieRead(MovieBase):
     showings: list["ShowingRead"] = Field(default_factory=list)
     genres: list["GenreRead"] = Field(default_factory=list)
     model_config = {"from_attributes": True}
+
+#Schemas for filter + sort parameters
+class MovieSortField(str, Enum):
+    name = "name"
+    duration = "duration"
+    release_date = "release_date"
+    available = "available"
+
+class SortOrder(str, Enum):
+    asc = "asc"
+    desc = "desc"
+
+class MovieFilterParams(BaseModel):
+    name: str | None = None
+    genre_id: UUID | None = None
+    available: bool | None = None
+    duration_min: int | None = None
+    duration_max: int | None = None
+    release_date_from: date | None = None
+    release_date_to: date | None = None
+    sort_by: MovieSortField | None = None
+    order: SortOrder = SortOrder.asc
+    limit: int = Field(default=20, ge=1, le=100)
+    offset: int = Field(default=0, ge=0)
 
 MovieRead.model_rebuild()

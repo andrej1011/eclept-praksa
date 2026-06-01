@@ -4,14 +4,35 @@ from uuid import UUID
 
 from app.models.movie import Movie
 from app.models.genre import Genre
-from app.schemas.movie import MovieCreate, MovieUpdate
+from app.schemas.movie import MovieCreate, MovieUpdate,MovieFilterParams, SortOrder
 
 class MovieService:
     def __init__(self, db: Session):
         self._db = db
 
-    def get_all(self) -> list[Movie]:
-        return self._db.query(Movie).all()
+    def get_all(self, f: MovieFilterParams) -> list[Movie]:
+        query = self._db.query(Movie)
+
+        if f.name:
+            query = query.filter(Movie.name.ilike(f"%{f.name}%"))
+        if f.genre_id:
+            query = query.filter(Movie.genres.any(Genre.id == f.genre_id))
+        if f.available is not None:
+            query = query.filter(Movie.available == f.available)
+        if f.duration_min is not None:
+            query = query.filter(Movie.duration >= f.duration_min)
+        if f.duration_max is not None:
+            query = query.filter(Movie.duration <= f.duration_max)
+        if f.release_date_from is not None:
+            query = query.filter(Movie.release_date >= f.release_date_from)
+        if f.release_date_to is not None:
+            query = query.filter(Movie.release_date <= f.release_date_to)
+
+        if f.sort_by:
+            col = getattr(Movie, f.sort_by.value)
+            query = query.order_by(col.desc() if f.order == SortOrder.desc else col.asc())
+
+        return query.offset(f.offset).limit(f.limit).all()
 
     def get_one(self, movie_id: UUID) -> Movie:
         m = self._db.query(Movie).filter(Movie.id == movie_id).first()
@@ -37,9 +58,13 @@ class MovieService:
         )
         if data.genre_ids:
             movie.genres = self._db.query(Genre).filter(Genre.id.in_(data.genre_ids)).all()
-        self._db.add(movie)
-        self._db.commit()
-        self._db.refresh(movie)
+        try:
+            self._db.add(movie)
+            self._db.commit()
+            self._db.refresh(movie)
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create movie entry")
         return movie
 
     def update(self, movie_id: UUID, data: MovieUpdate) -> Movie:
@@ -50,11 +75,19 @@ class MovieService:
             setattr(movie, k, v)
         if genre_ids is not None:
             movie.genres = self._db.query(Genre).filter(Genre.id.in_(genre_ids)).all()
-        self._db.commit()
-        self._db.refresh(movie)
+        try:
+            self._db.commit()
+            self._db.refresh(movie)
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update movie entry")
         return movie
 
     def delete(self, movie_id: UUID) -> None:
         movie = self.get_one(movie_id)
-        self._db.delete(movie)
-        self._db.commit()
+        try:
+            self._db.delete(movie)
+            self._db.commit()
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete movie entry")

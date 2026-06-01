@@ -17,7 +17,6 @@ class UserCreate(UserBase):
     password: Password
 
 class UserUpdate(BaseModel):
-    password: Password | None = None
     first_name: str | None = Field(default=None, max_length=100)
     last_name: str | None = Field(default=None, max_length=100)
     email: EmailStr | None = None
@@ -32,8 +31,5 @@ class UserRead(UserBase):
 class PasswordChange(BaseModel):
     old_password: str
     new_password: Password
-
-class RoleUpdate(BaseModel):
-    role: UserRole
 
 UserRead.model_rebuild()

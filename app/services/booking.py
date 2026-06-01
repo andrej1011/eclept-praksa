@@ -31,13 +31,17 @@ class BookingService:
             seats=data.seats,
             status=BookingStatus.active,
         )
-        self._db.add(booking)
-        self._db.commit()
-        self._db.refresh(booking)
+        try:
+            self._db.add(booking)
+            self._db.commit()
+            self._db.refresh(booking)
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create booking")
         return booking
 
     def get_all_bookings(self)-> list[Booking]:
-        return self._db.query(Booking)
+        return self._db.query(Booking).all()
     
     def get_user_bookings(self, user_id: UUID) -> list[Booking]:
         return self._db.query(Booking).filter(Booking.user_id == user_id).all()
@@ -51,7 +55,12 @@ class BookingService:
         return b
 
     def cancel(self, booking_id: UUID, user_id: UUID) -> Booking:
-        booking = self.get_one(booking_id, user_id)
+        booking = (
+            self._db.query(Booking)
+            .filter(Booking.id == booking_id, Booking.user_id == user_id)
+            .with_for_update()
+            .first()
+        )
         if booking.status == BookingStatus.cancelled:
             raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail = "Booking already cancelled")
 
@@ -61,8 +70,17 @@ class BookingService:
             .with_for_update()
             .first()
         )
-        showing.booked_seats -= booking.seats
-        booking.status = BookingStatus.cancelled
-        self._db.commit()
-        self._db.refresh(booking)
+        if not showing:
+            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "Showing not found")
+        
+        try:
+            if (showing.booked_seats-booking.seats>=0):
+                showing.booked_seats -= booking.seats
+                
+            booking.status = BookingStatus.cancelled
+            self._db.commit()
+            self._db.refresh(booking)
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to cancel the booking")
         return booking
