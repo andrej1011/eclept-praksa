@@ -32,7 +32,7 @@ class UserService:
 
     def change_password(self, user: User, old_password: str, new_password: str) -> None:
         if not verify_password(old_password, user.password):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Old password incorrect")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Old password incorrect")
         user.password = hash_password(new_password)
         try:
             self._db.commit()

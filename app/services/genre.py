@@ -34,7 +34,7 @@ class GenreService:
             self._db.refresh(g)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create genre")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create genre")
         return g
     
     def update(self, genre_id: UUID, data: GenreUpdate) -> Genre:
@@ -50,7 +50,7 @@ class GenreService:
             self._db.refresh(g)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update genre")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update genre")
         return g
 
     def delete(self, genre_id: UUID) -> None:
@@ -60,4 +60,4 @@ class GenreService:
             self._db.commit()
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete the genre")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete the genre")
