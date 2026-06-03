@@ -10,14 +10,13 @@ class UserBase(BaseModel):
     username: str = Field(min_length=3, max_length=32)
     first_name: str | None = Field(default=None, max_length=100)
     last_name: str | None = Field(default=None, max_length=100)
-    email: EmailStr | None = None
+    email: EmailStr
     phone_number: PhoneNumber | None = None
 
 class UserCreate(UserBase):
     password: Password
 
 class UserUpdate(BaseModel):
-    password: Password | None = None
     first_name: str | None = Field(default=None, max_length=100)
     last_name: str | None = Field(default=None, max_length=100)
     email: EmailStr | None = None
@@ -26,7 +25,10 @@ class UserUpdate(BaseModel):
 class UserRead(UserBase):
     id: UUID
     role: UserRole
-    bookings: list["BookingRead"] = Field(default_factory=list)
     model_config = {"from_attributes": True}
+
+class PasswordChange(BaseModel):
+    old_password: str
+    new_password: Password
 
 UserRead.model_rebuild()

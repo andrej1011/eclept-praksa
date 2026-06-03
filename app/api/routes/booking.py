@@ -37,7 +37,7 @@ def my_bookings(
     return service.get_user_bookings(user.id)
 
 @router.get("/{booking_id}", response_model=BookingRead)
-def get_booking(
+def get_booking_by_id(
     booking_id: UUID,
     user: User = Depends(get_current_user),
     service: BookingService = Depends(get_booking_service),

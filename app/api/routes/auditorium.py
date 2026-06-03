@@ -15,12 +15,12 @@ router = APIRouter(prefix="/auditoriums",tags=["auditoriums"])
 def get_auditorium_service(db: Session = Depends(get_db)) -> AuditoriumService:
     return AuditoriumService(db)
 
-@router.get("", response_model=list[AuditoriumRead],dependencies=[Depends(require_role(UserRole.admin))])
+@router.get("", response_model=list[AuditoriumRead])
 def list_auditoriums(service: AuditoriumService = Depends(get_auditorium_service)):
     return service.get_all()
 
-@router.get("/{auditorium_id}", response_model=AuditoriumRead,dependencies=[Depends(require_role(UserRole.admin))])
-def get_auditorium(auditorium_id: UUID, service: AuditoriumService = Depends(get_auditorium_service)):
+@router.get("/{auditorium_id}", response_model=AuditoriumRead)
+def get_auditorium_by_id(auditorium_id: UUID, service: AuditoriumService = Depends(get_auditorium_service)):
     return service.get_one(auditorium_id)
 
 @router.post("", response_model=AuditoriumRead, status_code=status.HTTP_201_CREATED,dependencies=[Depends(require_role(UserRole.admin))])

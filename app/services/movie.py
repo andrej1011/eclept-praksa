@@ -64,7 +64,7 @@ class MovieService:
             self._db.refresh(movie)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create movie entry")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create movie entry")
         return movie
 
     def update(self, movie_id: UUID, data: MovieUpdate) -> Movie:
@@ -80,7 +80,7 @@ class MovieService:
             self._db.refresh(movie)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update movie entry")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update movie entry")
         return movie
 
     def delete(self, movie_id: UUID) -> None:
@@ -90,4 +90,4 @@ class MovieService:
             self._db.commit()
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete movie entry")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete movie entry")

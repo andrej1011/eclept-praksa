@@ -18,7 +18,7 @@ def list_movies(filters: MovieFilterParams = Depends(), service: MovieService = 
     return service.get_all(filters)
 
 @router.get("/{movie_id}", response_model=MovieRead,status_code=status.HTTP_200_OK)
-def get_movie(movie_id: UUID, service: MovieService = Depends(get_movie_service)):
+def get_movie_by_id(movie_id: UUID, service: MovieService = Depends(get_movie_service)):
     return service.get_one(movie_id)
 
 @router.post("", response_model=MovieRead, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_role(UserRole.admin))])

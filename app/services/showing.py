@@ -33,7 +33,7 @@ class ShowingService:
             self._db.refresh(showing)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create showing")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create showing")
         return showing
 
     def update(self, showing_id: UUID, data: ShowingUpdate) -> Showing:
@@ -45,7 +45,7 @@ class ShowingService:
             self._db.refresh(showing)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update showing")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update showing")
         return showing
 
     def delete(self, showing_id: UUID) -> None:
@@ -55,4 +55,4 @@ class ShowingService:
             self._db.commit()
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete showing")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete showing")
