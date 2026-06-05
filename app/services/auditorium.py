@@ -30,7 +30,7 @@ class AuditoriumService:
             self._db.refresh(a)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create auditorium")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create auditorium")
         return a
 
     def update(self, auditorium_id: UUID, data: AuditoriumUpdate) -> Auditorium:

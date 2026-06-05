@@ -4,7 +4,6 @@ from uuid import UUID
 
 from app.models.user import User
 from app.schemas.user import UserUpdate
-from app.enums.user import UserRole
 from app.core.security import hash_password, verify_password
 
 class UserService:
@@ -34,6 +33,7 @@ class UserService:
     def change_password(self, user: User, old_password: str, new_password: str) -> None:
         if not verify_password(old_password, user.password):
             raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail="Old password incorrect")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Old password incorrect")
         user.password = hash_password(new_password)
         try:
             self._db.commit()
@@ -68,6 +68,4 @@ class UserService:
             self._db.commit()
         except Exception:
             self._db.rollback()
-            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete user")
-    
-    #should I move other user-related methods to user or should they stay in auth?
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete user")

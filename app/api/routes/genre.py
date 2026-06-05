@@ -18,7 +18,7 @@ def list_genres(name: str | None = None, service: GenreService = Depends(get_gen
     return service.get_all(name)
 
 @router.get("/{genre_id}", response_model=GenreRead,status_code=status.HTTP_200_OK)
-def get_genre(genre_id: UUID, service: GenreService = Depends(get_genre_service)):
+def get_genre_by_id(genre_id: UUID, service: GenreService = Depends(get_genre_service)):
     return service.get_one(genre_id)
 
 @router.post("", response_model=GenreRead, status_code=status.HTTP_201_CREATED,dependencies=[Depends(require_role(UserRole.admin))])
