@@ -1,7 +1,5 @@
 from enum import Enum
 
-class BookingStatus(Enum):
+class ShowingStatus(Enum):
     active = "active"
-    used = "used"
-    expired = "expired"
     cancelled = "cancelled"

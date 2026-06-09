@@ -12,3 +12,4 @@ passlib[bcrypt]
 bcrypt<4.1
 password-validator
 pyjwt
+apscheduler

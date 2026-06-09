@@ -1,10 +1,12 @@
 import uuid
-from sqlalchemy import ForeignKey, Integer
+from sqlalchemy import ForeignKey, Integer, Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import TIMESTAMP
 from app.db.database import Base
 from datetime import datetime
+
+from app.enums.showing import ShowingStatus
 
 class Showing(Base):
     __tablename__ = "showings"
@@ -18,3 +20,9 @@ class Showing(Base):
     movie: Mapped["Movie"] = relationship("Movie", back_populates="showings")
     auditorium: Mapped["Auditorium"] = relationship("Auditorium", back_populates="showings")
     bookings: Mapped[list["Booking"]] = relationship("Booking", back_populates="showing")
+
+    status: Mapped[ShowingStatus] = mapped_column(
+    SAEnum(ShowingStatus, name="showing_status"),
+    nullable=False,
+    default=ShowingStatus.active,
+)

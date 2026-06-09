@@ -8,6 +8,7 @@ from app.enums.user import UserRole
 from app.models.user import User
 from app.schemas.booking import BookingCreate, BookingRead
 from app.services.booking import BookingService
+from app.schemas.booking import BookingFilters
 
 router = APIRouter(prefix="/bookings",tags=["bookings"])
 
@@ -51,3 +52,7 @@ def cancel_booking(
     service: BookingService = Depends(get_booking_service),
 ):
     return service.cancel(booking_id, user.id)
+
+@router.post("/{booking_id}/validate", response_model=BookingRead, dependencies=[Depends(require_role(UserRole.admin))])
+def validate_booking(booking_id: UUID, service: BookingService = Depends(get_booking_service)):
+    return service.mark_used(booking_id)

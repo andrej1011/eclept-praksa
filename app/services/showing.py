@@ -2,17 +2,44 @@ from fastapi import HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from uuid import UUID
-from datetime import date
+from datetime import datetime,timezone,timedelta
 
 from app.models.showing import Showing
-from app.schemas.showing import ShowingCreate, ShowingUpdate
+from app.schemas.showing import ShowingCreate, ShowingUpdate,ShowingFilters
+from app.models.auditorium import Auditorium
+from app.enums.sorting import SortOrder
+from app.enums.showing import ShowingStatus
+from app.enums.booking import BookingStatus
+from app.models.booking import Booking
+from app.models.movie import Movie
+
 
 class ShowingService:
     def __init__(self, db: Session):
         self._db = db
 
-    def get_all(self) -> list[Showing]:
-        return self._db.query(Showing).all()
+    def get_all(self, f: ShowingFilters) -> list[Showing]:
+        now = datetime.now(timezone.utc)
+        query = self._db.query(Showing)
+
+        if f.movie_id:
+            query = query.filter(Showing.movie_id == f.movie_id)
+        if f.day:
+            query = query.filter(func.date(Showing.start_time) == f.day)
+        if f.upcoming:
+            query = query.filter(Showing.start_time >= now)
+        if f.passed:
+            query = query.filter(Showing.start_time < now)
+        if f.fully_booked is not None:
+            query = query.join(Auditorium)
+            if f.fully_booked:
+                query = query.filter(Showing.booked_seats >= Auditorium.capacity)
+            else:
+                query = query.filter(Showing.booked_seats < Auditorium.capacity)
+
+        col = Showing.start_time
+        query = query.order_by(col.desc() if f.order == SortOrder.desc else col.asc())
+        return query.offset(f.offset).limit(f.limit).all()
 
     def get_one(self, showing_id: UUID) -> Showing:
         s = self._db.query(Showing).filter(Showing.id == showing_id).first()
@@ -20,7 +47,10 @@ class ShowingService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Showing not found")
         return s
 
+    
     def create(self, data: ShowingCreate) -> Showing:
+        if self.has_conflict(data.auditorium_id, data.start_time, data.movie_id):
+            raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail="Auditorium has a conflicting showing at that time")
         showing = Showing(
             movie_id=data.movie_id,
             auditorium_id=data.auditorium_id,
@@ -33,7 +63,7 @@ class ShowingService:
             self._db.refresh(showing)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create showing")
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create showing")
         return showing
 
     def update(self, showing_id: UUID, data: ShowingUpdate) -> Showing:
@@ -45,7 +75,7 @@ class ShowingService:
             self._db.refresh(showing)
         except Exception:
             self._db.rollback()
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update showing")
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update showing")
         return showing
 
     def delete(self, showing_id: UUID) -> None:
@@ -55,4 +85,43 @@ class ShowingService:
             self._db.commit()
         except Exception:
             self._db.rollback()
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete showing")
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete showing")
+        
+    def cancel(self, showing_id: UUID) -> Showing:
+        showing = self.get_one(showing_id)
+        if showing.status == ShowingStatus.cancelled:
+            raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail="Showing already cancelled")
+
+        showing.status = ShowingStatus.cancelled
+        self._db.query(Booking).filter(
+            Booking.showing_id == showing_id,
+            Booking.status == BookingStatus.active,
+        ).update({"status": BookingStatus.cancelled}, synchronize_session=False)
+
+        try:
+            self._db.commit()
+            self._db.refresh(showing)
+        except Exception:
+            self._db.rollback()
+            raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to cancel showing")
+        return showing
+    
+    def has_conflict(self, auditorium_id: UUID, start_time, movie_id: UUID, exclude_showing_id: UUID | None = None) -> bool:
+        new_movie = self._db.query(Movie).filter(Movie.id == movie_id).first()
+        if not new_movie:
+            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail="Movie not found")
+        new_end = start_time + timedelta(minutes=new_movie.duration)
+
+        query = (
+            self._db.query(Showing)
+            .join(Movie, Movie.id == Showing.movie_id)
+            .filter(
+                Showing.auditorium_id == auditorium_id,
+                Showing.status == ShowingStatus.active,
+                Showing.start_time < new_end,
+                Showing.start_time + func.make_interval(mins=Movie.duration) > start_time,
+            )
+        )
+        if exclude_showing_id:
+            query = query.filter(Showing.id != exclude_showing_id)
+        return query.first() is not None

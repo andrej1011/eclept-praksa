@@ -5,6 +5,7 @@ from enum import Enum
 
 from app.schemas.showing import ShowingRead
 from app.schemas.genre import GenreRead
+from app.enums.sorting import SortOrder
 
 class MovieBase(BaseModel):
     name: str = Field(min_length=1, max_length=255)
@@ -40,10 +41,6 @@ class MovieSortField(str, Enum):
     duration = "duration"
     release_date = "release_date"
     available = "available"
-
-class SortOrder(str, Enum):
-    asc = "asc"
-    desc = "desc"
 
 class MovieFilterParams(BaseModel):
     name: str | None = None

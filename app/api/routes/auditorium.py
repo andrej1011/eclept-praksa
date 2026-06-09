@@ -16,6 +16,7 @@ def get_auditorium_service(db: Session = Depends(get_db)) -> AuditoriumService:
     return AuditoriumService(db)
 
 @router.get("", response_model=list[AuditoriumRead])
+@router.get("", response_model=list[AuditoriumRead])
 def list_auditoriums(service: AuditoriumService = Depends(get_auditorium_service)):
     return service.get_all()
 

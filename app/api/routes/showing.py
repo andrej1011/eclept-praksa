@@ -5,7 +5,7 @@ from uuid import UUID
 from app.db.database import get_db
 from app.api.routes.auth import require_role
 from app.enums.user import UserRole
-from app.schemas.showing import ShowingCreate, ShowingUpdate, ShowingRead
+from app.schemas.showing import ShowingCreate, ShowingUpdate, ShowingRead, ShowingFilters
 from app.services.showing import ShowingService
 
 router = APIRouter(prefix="/showings",tags=["showings"])
@@ -13,9 +13,9 @@ router = APIRouter(prefix="/showings",tags=["showings"])
 def get_showing_service(db: Session = Depends(get_db)) -> ShowingService:
     return ShowingService(db)
 
-@router.get("", response_model=list[ShowingRead],status_code=status.HTTP_200_OK)
-def list_showings(service: ShowingService = Depends(get_showing_service)):
-    return service.get_all()
+@router.get("", response_model=list[ShowingRead])
+def list_showings(filters: ShowingFilters = Depends(), service: ShowingService = Depends(get_showing_service)):
+    return service.get_all(filters)
 
 @router.post("", response_model=ShowingRead, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_role(UserRole.admin))])
 def create_showing(data: ShowingCreate, service: ShowingService = Depends(get_showing_service)):
@@ -32,3 +32,7 @@ def update_showing(showing_id: UUID, data: ShowingUpdate, service: ShowingServic
 @router.delete("/{showing_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_role(UserRole.admin))])
 def delete_showing(showing_id: UUID, service: ShowingService = Depends(get_showing_service)):
     service.delete(showing_id)
+
+@router.post("/{showing_id}/cancel", response_model=ShowingRead, dependencies=[Depends(require_role(UserRole.admin))])
+def cancel_showing(showing_id: UUID, service: ShowingService = Depends(get_showing_service)):
+    return service.cancel(showing_id)
