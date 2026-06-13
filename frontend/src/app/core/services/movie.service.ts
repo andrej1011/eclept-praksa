@@ -20,4 +20,24 @@ export class MovieService {
   get(id: string): Promise<Movie> {
     return firstValueFrom(this.http.get<Movie>(`${this.base}/${id}`));
   }
+  create(d: MovieInput): Promise<Movie> { 
+    return firstValueFrom(this.http.post<Movie>(this.base, d)); 
+  }
+  update(id: string, d: Partial<MovieInput>): Promise<Movie> { 
+    return firstValueFrom(this.http.patch<Movie>(`${this.base}/${id}`, d)); 
+  }
+  remove(id: string): Promise<void> { 
+    return firstValueFrom(this.http.delete<void>(`${this.base}/${id}`)); 
+  }
+}
+
+export interface MovieInput {
+  name: string;
+  available: boolean;
+  duration: number;
+  poster_url?: string | null;
+  short_description?: string | null;
+  release_date?: string | null;   // YYYY-MM-DD
+  imdb_link?: string | null;
+  genre_ids: string[];
 }
