@@ -3,14 +3,13 @@ from pydantic_extra_types.phone_numbers import PhoneNumber
 from uuid import UUID
 
 from app.enums.user import UserRole
-from app.schemas.booking import BookingRead
 from app.schemas.types import Password
 
 class UserBase(BaseModel):
     username: str = Field(min_length=3, max_length=32)
     first_name: str | None = Field(default=None, max_length=100)
     last_name: str | None = Field(default=None, max_length=100)
-    email: EmailStr
+    email: EmailStr | None = None
     phone_number: PhoneNumber | None = None
 
 class UserCreate(UserBase):

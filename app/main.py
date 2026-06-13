@@ -1,5 +1,7 @@
 from app.api.routes import auditorium,genre,movie,showing,booking,user
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.core.config import settings
 from contextlib import asynccontextmanager
 from app.core.scheduler import scheduler
 from app.api.routes import auth
@@ -11,6 +13,15 @@ async def lifespan(app: FastAPI):
     scheduler.shutdown()
 
 app = FastAPI(lifespan=lifespan,title="MovieMate API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.FRONTEND_HOST+":"+settings.FRONTEND_PORT],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 app.include_router(auth.router)
 app.include_router(auditorium.router)
