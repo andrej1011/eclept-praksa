@@ -12,4 +12,11 @@ export class BookingService {
   create(data: BookingCreate): Promise<Booking> {
     return firstValueFrom(this.http.post<Booking>(this.base, data));
   }
+  
+  mine(): Promise<Booking[]> {
+    return firstValueFrom(this.http.get<Booking[]>(`${this.base}/me`));
+  }
+  cancel(id: string): Promise<Booking> {
+    return firstValueFrom(this.http.post<Booking>(`${this.base}/${id}/cancel`, {}));
+  }
 }

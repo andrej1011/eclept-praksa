@@ -30,12 +30,13 @@ def all_bookings(
 ):
     return service.get_all_bookings()
 
-@router.get("/me", response_model=list[BookingRead],status_code=status.HTTP_200_OK)
+@router.get("/me", response_model=list[BookingRead], status_code=status.HTTP_200_OK)
 def my_bookings(
     user: User = Depends(get_current_user),
     service: BookingService = Depends(get_booking_service),
+    filters: BookingFilters = Depends(),
 ):
-    return service.get_user_bookings(user.id)
+    return service.get_user_bookings(user.id, filters)
 
 @router.get("/{booking_id}", response_model=BookingRead)
 def get_booking_by_id(

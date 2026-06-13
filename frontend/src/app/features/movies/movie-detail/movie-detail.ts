@@ -24,7 +24,7 @@ interface DayGroup { date: string; showings: Showing[]; }
             @for (g of m.genres; track g.id) { <span class="chip">{{ g.name }}</span> }
           </div>
           <p class="meta">
-            @if (m.release_date) {Release date: {{ m.release_date | date:'dd. MMMM y.' }} }
+            @if (m.release_date) {Release date: {{ m.release_date | date:'d. MMMM y.' }} }
           </p>
           <p class="meta">
             Duration: {{ (m.duration - (m.duration % 60)) / 60 }}h {{ m.duration % 60 }}m
@@ -38,7 +38,7 @@ interface DayGroup { date: string; showings: Showing[]; }
           @if (days().length === 0) { <p class="muted">No upcoming showings.</p> }
           @for (d of days(); track d.date) {
             <div class="day">
-              <h3>{{ d.date | date:'EEE, MMMM d' }}</h3>
+              <h3>{{ d.date | date:'EEEE, d. MMMM' }}</h3>
               <div class="chips">
                 @for (s of d.showings; track s.id) {
                   <a mat-flat-button class="chip-btn" [class.sold]="soldOut(s)"
