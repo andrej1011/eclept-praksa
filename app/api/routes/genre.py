@@ -26,8 +26,8 @@ def create_genre(data: GenreCreate, service: GenreService = Depends(get_genre_se
     return service.create(data)
 
 @router.patch("/{genre_id}", response_model=GenreRead,status_code=status.HTTP_200_OK,dependencies=[Depends(require_role(UserRole.admin))])
-def update_genre(auditorium_id: UUID, data: GenreUpdate, service: GenreService = Depends(get_genre_service)):
-    return service.update(auditorium_id, data)
+def update_genre(genre_id: UUID, data: GenreUpdate, service: GenreService = Depends(get_genre_service)):
+    return service.update(genre_id, data)
 
 @router.delete("/{genre_id}", status_code=status.HTTP_204_NO_CONTENT,dependencies=[Depends(require_role(UserRole.admin))])
 def delete_genre(genre_id: UUID, service: GenreService = Depends(get_genre_service)):

@@ -7,7 +7,10 @@ import { Genre } from '../models/genre';
 @Injectable({ providedIn: 'root' })
 export class GenreService {
   private http = inject(HttpClient);
-  list(): Promise<Genre[]> {
-    return firstValueFrom(this.http.get<Genre[]>(`${environment.apiUrl}/genres`));
-  }
+  private base = `${environment.apiUrl}/genres`;
+
+  list(): Promise<Genre[]> { return firstValueFrom(this.http.get<Genre[]>(this.base)); }
+  create(name: string): Promise<Genre> { return firstValueFrom(this.http.post<Genre>(this.base, { name })); }
+  update(id: string, name: string): Promise<Genre> { return firstValueFrom(this.http.patch<Genre>(`${this.base}/${id}`, { name })); }
+  delete(id: string): Promise<void> { return firstValueFrom(this.http.delete<void>(`${this.base}/${id}`)); }
 }
