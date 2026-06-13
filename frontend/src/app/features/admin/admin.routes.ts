@@ -7,5 +7,6 @@ export const ADMIN_ROUTES: Routes = [
     { path: 'genres', loadComponent: () => import('./genres-admin/genres-admin').then(m => m.GenresAdmin) },
     { path: 'auditoriums', loadComponent: () => import('./auditoriums-admin/auditoriums-admin').then(m => m.AuditoriumsAdmin) },
     { path: 'movies', loadComponent: () => import('./movies-admin/movies-admin').then(m => m.MoviesAdmin) },
+    { path: 'showings', loadComponent: () => import('./showings-admin/showings-admin').then(m => m.ShowingsAdmin) },
   ]},
 ];

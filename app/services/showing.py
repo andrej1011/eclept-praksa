@@ -119,7 +119,7 @@ class ShowingService:
                 Showing.auditorium_id == auditorium_id,
                 Showing.status == ShowingStatus.active,
                 Showing.start_time < new_end,
-                Showing.start_time + func.make_interval(mins=Movie.duration) > start_time,
+                Showing.start_time + func.make_interval(0, 0, 0, 0, 0, Movie.duration) > start_time,
             )
         )
         if exclude_showing_id:
