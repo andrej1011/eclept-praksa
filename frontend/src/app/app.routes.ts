@@ -6,5 +6,8 @@ export const routes: Routes = [
   { path: 'login', loadComponent: () => import('./features/auth/login/login').then(m => m.Login) },
   { path: 'register', loadComponent: () => import('./features/auth/register/register').then(m => m.Register) },
   { path: 'dashboard', canActivate: [authGuard], loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard) },
+  { path: 'movies', loadComponent: () => import('./features/movies/movie-list/movie-list').then(m => m.MovieList) },
+  { path: 'movies/:id', loadComponent: () => import('./features/movies/movie-detail/movie-detail').then(m => m.MovieDetail) },
+  { path: 'showings/:id/book', canActivate: [authGuard], loadComponent: () => import('./features/booking/booking').then(m => m.Booking) },
   { path: '**', loadComponent: () => import('./features/not-found/not-found').then(m => m.NotFound) },
 ];
