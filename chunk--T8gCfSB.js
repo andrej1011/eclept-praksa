@@ -1,0 +1,1 @@
+function i(t){let r=t?.error?.detail;return Array.isArray(r)?r.map(n=>n.msg??n).join(", "):typeof r=="string"?r:"Something went wrong"}export{i};
