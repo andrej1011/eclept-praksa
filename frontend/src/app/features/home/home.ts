@@ -18,7 +18,7 @@ import { MovieCard } from '../../shared/components/movie-card/movie-card';
       </mat-form-field>
     </section>
 
-    <h2 class="title">Now Showing</h2>
+    <h1 class="title">Now Showing</h1>
 
     @if (loading()) { <p class="muted">Loading…</p> }
     @else if (movies().length === 0) { <p class="muted">No movies found.</p> }
