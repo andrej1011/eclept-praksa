@@ -38,7 +38,7 @@ interface DayGroup { date: string; showings: Showing[]; }
           @if (days().length === 0) { <p class="muted">No upcoming showings.</p> }
           @for (d of days(); track d.date) {
             <div class="day">
-              <h3>{{ d.date | date:'EEEE, d. MMMM' }}</h3>
+              <h3>{{ d.date | date:((d.date | date:'y') === (now | date:'y') ? 'EEEE, d. MMMM' : 'EEEE, d. MMMM y.') }}</h3>
               <div class="chips">
                 @for (s of d.showings; track s.id) {
                   <a mat-flat-button class="chip-btn" [class.sold]="soldOut(s)"
@@ -79,7 +79,8 @@ export class MovieDetail {
   loading = signal(true);
   private auds = signal<Map<string, Auditorium>>(new Map());
   fallback = '/poster-fallback.png';
-
+  now = new Date();
+  
   days = computed<DayGroup[]>(() => {
     const m = this.movie();
     if (!m) return [];

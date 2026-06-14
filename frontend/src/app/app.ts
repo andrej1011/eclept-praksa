@@ -13,7 +13,7 @@ import { Footer } from './layout/footer/footer';
   `,
   styles: `
     :host { display: flex; flex-direction: column; min-height: 100vh; }
-    .content { width: 100%; max-width: 1200px; margin: 0 auto; padding: 8px 24px 56px; box-sizing: border-box; }
+    .content { flex: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding: 8px 24px 56px; box-sizing: border-box; }
   `,
 })
 export class App {}

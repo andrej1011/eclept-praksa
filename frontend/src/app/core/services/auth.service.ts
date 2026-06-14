@@ -13,7 +13,7 @@ export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  private currentUser = signal<User | null>(null);
+  currentUser = signal<User | null>(null);
 
   readonly user = this.currentUser.asReadonly();
   readonly isLoggedIn = computed(() => this.currentUser() !== null);

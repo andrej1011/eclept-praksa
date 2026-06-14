@@ -33,8 +33,13 @@ import { MovieCard } from '../../shared/components/movie-card/movie-card';
     .search { width:100%; max-width:520px; }
     .title { padding:0 24px; }
     .muted { padding:24px; color:var(--mat-sys-on-surface-variant); }
-    .grid { display:grid; gap:20px; padding:16px 24px 48px;
-            grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 0.8fr));
+      gap: 30px;
+      padding:16px 24px 30px;
+    }
+
   `,
 })
 export class Home {

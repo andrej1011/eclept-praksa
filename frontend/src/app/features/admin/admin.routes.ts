@@ -8,5 +8,6 @@ export const ADMIN_ROUTES: Routes = [
     { path: 'auditoriums', loadComponent: () => import('./auditoriums-admin/auditoriums-admin').then(m => m.AuditoriumsAdmin) },
     { path: 'movies', loadComponent: () => import('./movies-admin/movies-admin').then(m => m.MoviesAdmin) },
     { path: 'showings', loadComponent: () => import('./showings-admin/showings-admin').then(m => m.ShowingsAdmin) },
+    { path: 'users', loadComponent: () => import('./users-admin/users-admin').then(m => m.UsersAdmin) },
   ]},
 ];

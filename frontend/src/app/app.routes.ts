@@ -11,5 +11,6 @@ export const routes: Routes = [
   { path: 'movies/:id', loadComponent: () => import('./features/movies/movie-detail/movie-detail').then(m => m.MovieDetail) },
   { path: 'showings/:id/book', canActivate: [authGuard], loadComponent: () => import('./features/booking/booking').then(m => m.Booking) },
   { path: 'admin', canActivate: [adminGuard],loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES) },
+  { path: 'profile', canActivate: [authGuard], loadComponent: () => import('./features/profile/profile').then(m => m.Profile) },
   { path: '**', loadComponent: () => import('./features/not-found/not-found').then(m => m.NotFound) },
 ];

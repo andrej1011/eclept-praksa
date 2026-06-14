@@ -25,7 +25,8 @@ import { Auditorium } from '../../core/models/auditorium';
         <h1>Book tickets</h1>
         <div class="summary">
           <p class="movie">{{ movieName() }}</p>
-          <p>{{ s.start_time | date:'EEE, dd. MMMM y. · HH:mm' }}</p>
+          <p>{{ s.start_time | date:'EEEE, dd. MMMM y.' }}</p>
+          <p>{{ s.start_time | date:'HH:mm' }}</p>
           <p>{{ audName() }}</p>
           <p class="muted">{{ seatsLeft() }} seats left</p>
         </div>

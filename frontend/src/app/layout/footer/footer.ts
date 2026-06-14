@@ -15,8 +15,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
       font-size: 12px;
       color: var(--mat-sys-on-surface-variant);
     }
-    a { color: var(--mat-sys-on-surface-variant); }
-    a:hover { color: var(--mat-sys-on-surface); }
+    a { color: var(--mat-sys-on-surface-variant); text-decoration: none; }
+    a:hover { color: var(--mat-sys-on-surface); text-decoration: underline; }
   `,
 })
 export class Footer {}
