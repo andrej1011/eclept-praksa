@@ -1,0 +1,5 @@
+@mixin mobile { @media (max-width: 599px) { @content; } }
+@mixin card-hover {
+  transition: transform .2s ease, box-shadow .2s ease;
+  &:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+}
