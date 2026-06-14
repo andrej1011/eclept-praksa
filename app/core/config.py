@@ -1,6 +1,8 @@
 from dotenv import dotenv_values
+import os
 
-env_config = dotenv_values(".env")
+env_config = {**dotenv_values(".env"), **os.environ}
+
 
 class Settings:
     DATABASE_URL: str = env_config.get("DATABASE_URL")
