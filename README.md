@@ -2,7 +2,7 @@
 
 A full-stack cinema booking application. Browse movies and showtimes, book seats, manage bookings, and administer the catalog. Built with a **FastAPI + Postgres** backend and an **Angular 22** frontend.
 
-Developed during an internship at [Eclept](https://www.eclept.com/).
+Developed during an internship at Eclept.
 
 ## Features
 
@@ -185,7 +185,7 @@ eclept-praksa/
 
 ## Internship at Eclept
 
-MovieMate was built as an internship project at **Eclept**. The backend was developed first as the foundation, then the Angular frontend was built on top of it.
+MovieMate was built as an internship project at Eclept. The backend was developed first as the foundation, then the Angular frontend was built on top of it.
 
 Goals of the internship:
 
@@ -194,4 +194,4 @@ Goals of the internship:
 - Work against a live backend: reading source, confirming contracts, and fixing backend bugs surfaced by the frontend
 - Cover the full feature set: authentication, public browsing, booking flow, user dashboard, and a complete admin panel
 
-© 2026 Copyright [Eclept](https://www.eclept.com/) & [Andrej Rajkov](https://andrej1011.github.io/)
+© 2026 Copyright [Andrej Rajkov](https://andrej1011.github.io/)
