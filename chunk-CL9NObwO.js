@@ -1,0 +1,1 @@
+import {Z as ZI,bk as kc,g as gD,bl as Oc}from'./main-JYSEEZXV.js';var s=class e{static \u0275fac=function(t){return new(t||e)};static \u0275cmp=ZI({type:e,selectors:[["app-not-found"]],decls:2,vars:0,consts:[[2,"padding","24px"]],template:function(t,p){t&1&&(kc(0,"h1",0),gD(1,"404 Not Found"),Oc());},encapsulation:2})};export{s as NotFound};
