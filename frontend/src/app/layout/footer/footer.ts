@@ -6,7 +6,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   imports: [MatToolbarModule],
   template: `
     <mat-toolbar class="footer">
-      <span>© 2026 Copyright <a href="https://github.com/andrej1011/eclept-praksa">Eclept & Andrej Rajkov</a></span>
+      <span>© 2026 by <a href="https://github.com/andrej1011/eclept-praksa">Andrej Rajkov</a></span>
     </mat-toolbar>
   `,
   styles: `
