@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://eclept-praksa-vwng.onrender.com/', //change when uploaded to firebase
+  apiUrl: 'http://localhost:8000', //change when uploaded to firebase
 };
