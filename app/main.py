@@ -16,7 +16,7 @@ app = FastAPI(lifespan=lifespan,title="MovieMate API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.FRONTEND_HOST],
+    allow_origins=[settings.FRONTEND_HOST, "http://localhost:4200"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
