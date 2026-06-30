@@ -1,1 +1,0 @@
-import {K as KI,bk as kc,a as yD,bl as Oc}from'./main-QKR32KZB.js';var s=class e{static \u0275fac=function(t){return new(t||e)};static \u0275cmp=KI({type:e,selectors:[["app-not-found"]],decls:2,vars:0,consts:[[2,"padding","24px"]],template:function(t,p){t&1&&(kc(0,"h1",0),yD(1,"404 Not Found"),Oc());},encapsulation:2})};export{s as NotFound};
